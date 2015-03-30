@@ -23,6 +23,10 @@ $(function() {
   $('#22').addClass('gamePiece');
   $('#23').addClass('gamePiece');
   $('#33').addClass('gamePiece');
+  $('#13').addClass('gamePiece');
+  $('#14').addClass('gamePiece');
+  $('#15').addClass('gamePiece');
+  $('#25').addClass('gamePiece');
 
   $('.hex').on('click', function() {
     if (!$(this).hasClass('gamePiece')) {
@@ -39,26 +43,22 @@ $(function() {
 
 
 function highlightSurrounding(id, moves) {
-  // var row = id.split('')[0];
-  // var col = id.split('')[1];
-
-  console.log('in highsurround', id);
   if (moves > 0 && !$('#'+id).hasClass('gamePiece')) {
     if (id.slice(-1) % 2 === 1) {
     // doesn't allow pieces not next to the hive to be clicked
       if (oddIdIsAdjacentToHive(id)) {
-        highlightForOddId(id, moves);
+        highlighting(id, moves, 'odd');
       }
     } else {
     // doesn't allow pieces not next to the hive to be clicked
       if (evenIdIsAdjacentToHive(id)) {
-        highlightForEvenId(id, moves);
+        highlighting(id, moves, 'even');
       }
     }
   }
 }
 
-function highlightForOddId(id, moves) {
+function highlighting(id, moves, idEvenOdd) {
   var row = id.split('')[0];
   var col = id.split('')[1];
 
@@ -66,13 +66,21 @@ function highlightForOddId(id, moves) {
   highlightSurrounding((parseInt(row)+1) + col, moves-1);
   highlightSurrounding(row + (parseInt(col)-1), moves-1);
   highlightSurrounding(row + (parseInt(col)+1), moves-1);
-  highlightSurrounding((parseInt(row)+1) + '' + (parseInt(col)-1), moves-1);
-  highlightSurrounding((parseInt(row)+1) + '' + (parseInt(col)+1), moves-1);
 
   colorHex((parseInt(row)-1) + col, 'blue');    // up
   colorHex((parseInt(row)+1) + col, 'blue');    // down
   colorHex(row + (parseInt(col)-1), 'blue');    // left-up
   colorHex(row + (parseInt(col)+1), 'blue');    // right-up
+
+  (idEvenOdd === 'odd') ? highlightForOddId(id, moves) : highlightForEvenId(id, moves);
+}
+
+function highlightForOddId(id, moves) {
+  var row = id.split('')[0];
+  var col = id.split('')[1];
+
+  highlightSurrounding((parseInt(row)+1) + '' + (parseInt(col)-1), moves-1);
+  highlightSurrounding((parseInt(row)+1) + '' + (parseInt(col)+1), moves-1);
   colorHex((parseInt(row)+1) + '' + (parseInt(col)-1), 'blue');     // left-down
   colorHex((parseInt(row)+1) + '' + (parseInt(col)+1), 'blue');     // right-down
 }
@@ -80,27 +88,18 @@ function highlightForOddId(id, moves) {
 function highlightForEvenId(id, moves) {
   var row = id.split('')[0];
   var col = id.split('')[1];
-  highlightSurrounding((parseInt(row)-1) + col, moves-1);
-  highlightSurrounding((parseInt(row)+1) + col, moves-1);
+
   highlightSurrounding((parseInt(row)-1) + '' + (parseInt(col)-1), moves-1);
   highlightSurrounding((parseInt(row)-1) + '' + (parseInt(col)+1), moves-1);
-  highlightSurrounding(row + (parseInt(col)-1), moves-1);
-  highlightSurrounding(row + (parseInt(col)+1), moves-1);
-
-  colorHex((parseInt(row)-1) + col, 'blue');    // up
-  colorHex((parseInt(row)+1) + col, 'blue');    // down
   colorHex((parseInt(row)-1) + '' + (parseInt(col)-1), 'blue');     // left-down
   colorHex((parseInt(row)-1) + '' + (parseInt(col)+1), 'blue');     // right-down
-  colorHex(row + (parseInt(col)-1), 'blue');     // left-down
-  colorHex(row + (parseInt(col)+1), 'blue');     // right-down
 }
 
 function colorHex(id, color) {
   var row = id.split('')[0];
   var col = id.split('')[1];
-  // odds
-  if ( ((col % 2 === 1) && oddIdIsAdjacentToHive(id)) || ((col % 2 ===0) && evenIdIsAdjacentToHive(id)) ) {
 
+  if ( ((col % 2 === 1) && oddIdIsAdjacentToHive(id)) || ((col % 2 ===0) && evenIdIsAdjacentToHive(id)) ) {
     $('#' + id).addClass('highlight');
     $('#' + id + ' .hexLeft').addClass('leftTriHighlight');
     $('#' + id + ' .hexRight').addClass('rightTriHighlight');
