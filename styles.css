@@ -63,3 +63,16 @@
 .hex.even {
   margin-top: 53px;
 }
+
+.leftTriHighlight {
+  border-right-color: blue;
+}
+
+.rightTriHighlight {
+  border-left-color: blue;
+}
+
+.centerRectHighlight {
+  background-color: blue;
+}
+

@@ -1,8 +1,8 @@
 $(function() {
 
-  var rows = 5;
+  var rows = 9;
   var cols = 8;
-  var $hexRow = '';//$('<div class='></div>;
+  var $hexRow = '';
 
   for (var row=0; row<rows; row++) {
     $hexRow = $('<div class="hex-row row' + row + '"></div>');
@@ -23,21 +23,43 @@ $(function() {
 
   $('.hex').on('click', function() {
     var id = $(this).attr('id');
-    highlightSurrounding(id);
+    $('.highlight').removeClass('highlight');
+    $('.leftTriHighlight').removeClass('leftTriHighlight');
+    $('.rightTriHighlight').removeClass('rightTriHighlight');
+    $('.centerRectHighlight').removeClass('centerRectHighlight');
+    highlightSurrounding(id, 3);
+    // $(this).addClass('picked');
   });
 
 });
 
-function highlightSurrounding(id) {
-  if (id % 2 === 1)
-    highlightForOddId(id);
-  else
-    highlightForEvenId(id);
+function highlightSurrounding(id, moves) {
+  if (moves > 0) {
+    if (id.slice(-1) % 2 === 1)
+      highlightForOddId(id, moves);
+    else
+      highlightForEvenId(id, moves);
+  }
 }
 
-function highlightForOddId(id) {
+function highlightForOddId(id, moves) {
   var row = id.split('')[0];
   var col = id.split('')[1];
+
+  console.log((parseInt(row)-1) + col);
+  console.log((parseInt(row)+1) + col);
+  console.log(row + (parseInt(col)-1));
+  console.log(row + (parseInt(col)+1));
+  console.log((parseInt(row)+1) + '' + (parseInt(col)-1));
+  console.log((parseInt(row)+1) + '' + (parseInt(col)+1));
+
+  highlightSurrounding((parseInt(row)-1) + col, moves-1);
+  highlightSurrounding((parseInt(row)+1) + col, moves-1);
+  highlightSurrounding(row + (parseInt(col)-1), moves-1);
+  highlightSurrounding(row + (parseInt(col)+1), moves-1);
+  highlightSurrounding((parseInt(row)+1) + '' + (parseInt(col)-1), moves-1);
+  highlightSurrounding((parseInt(row)+1) + '' + (parseInt(col)+1), moves-1);
+
   colorHex((parseInt(row)-1) + col, 'blue');    // up
   colorHex((parseInt(row)+1) + col, 'blue');    // down
   colorHex(row + (parseInt(col)-1), 'blue');    // left-up
@@ -46,9 +68,16 @@ function highlightForOddId(id) {
   colorHex((parseInt(row)+1) + '' + (parseInt(col)+1), 'blue');     // right-down
 }
 
-function highlightForEvenId(id) {
+function highlightForEvenId(id, moves) {
   var row = id.split('')[0];
   var col = id.split('')[1];
+  highlightSurrounding((parseInt(row)-1) + col, moves-1);
+  highlightSurrounding((parseInt(row)+1) + col, moves-1);
+  highlightSurrounding((parseInt(row)-1) + '' + (parseInt(col)-1), moves-1);
+  highlightSurrounding((parseInt(row)-1) + '' + (parseInt(col)+1), moves-1);
+  highlightSurrounding(row + (parseInt(col)-1), moves-1);
+  highlightSurrounding(row + (parseInt(col)+1), moves-1);
+
   colorHex((parseInt(row)-1) + col, 'blue');    // up
   colorHex((parseInt(row)+1) + col, 'blue');    // down
   colorHex((parseInt(row)-1) + '' + (parseInt(col)-1), 'blue');     // left-down
@@ -58,11 +87,13 @@ function highlightForEvenId(id) {
 }
 
 function colorHex(id, color) {
-  // $('.highlight').removeClass('highlight');
-  // $('#' + id).addClass('highlight');
-  $('#' + id + ' .hexLeft').css('border-right-color', color);
-  $('#' + id + ' .hexCenter').css('background-color', color);
-  $('#' + id + ' .hexRight').css('border-left-color', color);
+  $('#' + id).addClass('highlight');
+  $('#' + id + ' .hexLeft').addClass('leftTriHighlight');
+  $('#' + id + ' .hexRight').addClass('rightTriHighlight');
+  $('#' + id + ' .hexCenter').addClass('centerRectHighlight');
+  // $('#' + id + ' .hexLeft').css('border-right-color', color);
+  // $('#' + id + ' .hexCenter').css('background-color', color);
+  // $('#' + id + ' .hexRight').css('border-left-color', color);
 }
 
 // .hexLeft:hover {
