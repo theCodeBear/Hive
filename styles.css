@@ -1,3 +1,10 @@
+#gameBoard {
+  width: 800px;
+  border: 10px solid brown;
+  overflow-x: scroll;
+  overflow-y: scroll;
+}
+
 .hex {
   float: left;
   margin-right: -26px;
