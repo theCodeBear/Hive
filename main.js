@@ -19,39 +19,48 @@ $(function() {
     $('#gameBoard').append($hexRow);
   }
 
-  // colorHex('11', 'orange');
+  $('#32').addClass('gamePiece');
+  $('#22').addClass('gamePiece');
+  $('#23').addClass('gamePiece');
+  $('#33').addClass('gamePiece');
 
   $('.hex').on('click', function() {
-    var id = $(this).attr('id');
-    $('.highlight').removeClass('highlight');
-    $('.leftTriHighlight').removeClass('leftTriHighlight');
-    $('.rightTriHighlight').removeClass('rightTriHighlight');
-    $('.centerRectHighlight').removeClass('centerRectHighlight');
-    highlightSurrounding(id, 3);
-    // $(this).addClass('picked');
+    if (!$(this).hasClass('gamePiece')) {
+      var id = $(this).attr('id');
+      $('.highlight').removeClass('highlight');
+      $('.leftTriHighlight').removeClass('leftTriHighlight');
+      $('.rightTriHighlight').removeClass('rightTriHighlight');
+      $('.centerRectHighlight').removeClass('centerRectHighlight');
+      highlightSurrounding(id, 3);
+      // $(this).addClass('picked');
+    }
   });
-
 });
 
+
 function highlightSurrounding(id, moves) {
-  if (moves > 0) {
-    if (id.slice(-1) % 2 === 1)
-      highlightForOddId(id, moves);
-    else
-      highlightForEvenId(id, moves);
+  // var row = id.split('')[0];
+  // var col = id.split('')[1];
+
+  console.log('in highsurround', id);
+  if (moves > 0 && !$('#'+id).hasClass('gamePiece')) {
+    if (id.slice(-1) % 2 === 1) {
+    // doesn't allow pieces not next to the hive to be clicked
+      if (oddIdIsAdjacentToHive(id)) {
+        highlightForOddId(id, moves);
+      }
+    } else {
+    // doesn't allow pieces not next to the hive to be clicked
+      if (evenIdIsAdjacentToHive(id)) {
+        highlightForEvenId(id, moves);
+      }
+    }
   }
 }
 
 function highlightForOddId(id, moves) {
   var row = id.split('')[0];
   var col = id.split('')[1];
-
-  console.log((parseInt(row)-1) + col);
-  console.log((parseInt(row)+1) + col);
-  console.log(row + (parseInt(col)-1));
-  console.log(row + (parseInt(col)+1));
-  console.log((parseInt(row)+1) + '' + (parseInt(col)-1));
-  console.log((parseInt(row)+1) + '' + (parseInt(col)+1));
 
   highlightSurrounding((parseInt(row)-1) + col, moves-1);
   highlightSurrounding((parseInt(row)+1) + col, moves-1);
@@ -87,53 +96,38 @@ function highlightForEvenId(id, moves) {
 }
 
 function colorHex(id, color) {
-  $('#' + id).addClass('highlight');
-  $('#' + id + ' .hexLeft').addClass('leftTriHighlight');
-  $('#' + id + ' .hexRight').addClass('rightTriHighlight');
-  $('#' + id + ' .hexCenter').addClass('centerRectHighlight');
-  // $('#' + id + ' .hexLeft').css('border-right-color', color);
-  // $('#' + id + ' .hexCenter').css('background-color', color);
-  // $('#' + id + ' .hexRight').css('border-left-color', color);
+  var row = id.split('')[0];
+  var col = id.split('')[1];
+  // odds
+  if ( ((col % 2 === 1) && oddIdIsAdjacentToHive(id)) || ((col % 2 ===0) && evenIdIsAdjacentToHive(id)) ) {
+
+    $('#' + id).addClass('highlight');
+    $('#' + id + ' .hexLeft').addClass('leftTriHighlight');
+    $('#' + id + ' .hexRight').addClass('rightTriHighlight');
+    $('#' + id + ' .hexCenter').addClass('centerRectHighlight');
+  }
 }
 
-// .hexLeft:hover {
-//   /* height: 100px; */
-//   float: left;
-//   border-top: 52px solid transparent;
-//   border-bottom: 52px solid transparent;
-//   border-right: 30px solid yellow;
-// }
+function oddIdIsAdjacentToHive(id) {
+  var row = id.split('')[0];
+  var col = id.split('')[1];
 
-// .hexCenter:hover {
-//   float: left;
-//   width: 60px;
-//   height: 104px;
-//   background-color: yellow;
-// }
+  return $('#'+(parseInt(row)-1) + col).hasClass('gamePiece') ||
+  $('#'+(parseInt(row)+1) + col).hasClass('gamePiece') ||
+  $('#'+row + (parseInt(col)-1)).hasClass('gamePiece') ||
+  $('#'+row + (parseInt(col)+1)).hasClass('gamePiece') ||
+  $('#'+(parseInt(row)+1) + '' + (parseInt(col)-1)).hasClass('gamePiece') ||
+  $('#'+(parseInt(row)+1) + '' + (parseInt(col)+1)).hasClass('gamePiece');
+}
 
-// .hexRight:hover {
-//   float: left;
-//   border-top: 52px solid transparent;
-//   border-bottom: 52px solid transparent;
-//   border-left: 30px solid yellow;
-// }
+function evenIdIsAdjacentToHive(id) {
+  var row = id.split('')[0];
+  var col = id.split('')[1];
 
-
-// <div class='hex-row'>
-//   <div class='hex'>
-//     <div class='hexLeft'></div>
-//     <div class='hexCenter'></div>
-//     <div class='hexRight'></div>
-//   </div>
-//   <div class='hex even'>
-//     <div class='hexLeft'></div>
-//     <div class='hexCenter'></div>
-//     <div class='hexRight'></div>
-//   </div>
-//   <div class='hex'>
-//     <div class='hexLeft'></div>
-//     <div class='hexCenter'></div>
-//     <div class='hexRight'></div>
-//   </div>
-// </div>
-
+  return $('#'+(parseInt(row)-1) + col).hasClass('gamePiece') ||
+  $('#'+(parseInt(row)+1) + col).hasClass('gamePiece') ||
+  $('#'+(parseInt(row)-1) + '' + (parseInt(col)-1)).hasClass('gamePiece') ||
+  $('#'+(parseInt(row)-1) + '' + (parseInt(col)+1)).hasClass('gamePiece') ||
+  $('#'+row + (parseInt(col)-1)).hasClass('gamePiece') ||
+  $('#'+row + (parseInt(col)+1)).hasClass('gamePiece');
+}

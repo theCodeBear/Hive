@@ -76,3 +76,14 @@
   background-color: blue;
 }
 
+.gamePiece .hexCenter {
+    background-color: black;
+}
+
+.gamePiece .hexLeft {
+  border-right-color: black;
+}
+
+.gamePiece .hexRight {
+  border-left-color: black;
+}
