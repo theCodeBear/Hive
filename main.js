@@ -4,6 +4,7 @@ $(function() {
   var cols = 8;
   var $hexRow = '';
 
+// create board
   for (var row=0; row<rows; row++) {
     $hexRow = $('<div class="hex-row row' + row + '"></div>');
     for (var col=0; col<cols; col++) {
@@ -19,6 +20,7 @@ $(function() {
     $('#gameBoard').append($hexRow);
   }
 
+// set pieces for testing
   $('#32').addClass('gamePiece');
   $('#22').addClass('gamePiece');
   $('#23').addClass('gamePiece');
@@ -28,6 +30,7 @@ $(function() {
   $('#15').addClass('gamePiece');
   $('#25').addClass('gamePiece');
 
+// if user clicks on an open board space, highlighting possible moves (testing 3 slides)
   $('.hex').on('click', function() {
     if (!$(this).hasClass('gamePiece')) {
       var id = $(this).attr('id');
@@ -76,6 +79,7 @@ function highlighting(id, moves, idEvenOdd) {
 }
 
 function highlightForOddId(id, moves) {
+  if ($('#'+id).hasClass('gamePiece')) return;
   var row = id.split('')[0];
   var col = id.split('')[1];
 
@@ -86,6 +90,7 @@ function highlightForOddId(id, moves) {
 }
 
 function highlightForEvenId(id, moves) {
+  if ($('#'+id).hasClass('gamePiece')) return;
   var row = id.split('')[0];
   var col = id.split('')[1];
 
@@ -96,6 +101,7 @@ function highlightForEvenId(id, moves) {
 }
 
 function colorHex(id, color) {
+  if ($('#'+id).hasClass('gamePiece')) return;
   var row = id.split('')[0];
   var col = id.split('')[1];
 
