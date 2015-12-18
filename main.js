@@ -63,64 +63,66 @@ function highlightSurrounding(id, moves) {
 // attempts to highlight tile with given id, and call function to highlight surrounding tiles
 function highlighting(id, moves, isOdd) {
   var canHighlight = adjacentTilesSlidable(id, isOdd);
+  var thisTileAdjPieces = findAdjacentPieceIds(id, isOdd);
   var row = id.split('')[0];
   var col = id.split('')[1];
 
-  if (canHighlight[0]) { // up
+  if (canHighlight[0] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((row-1) + col))) { // up
     highlightSurrounding((parseInt(row)-1) + col, moves-1);
     colorHex((parseInt(row)-1) + col, 'blue');
   }
-  if (canHighlight[3]) { // down
+  if (canHighlight[3] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((+row + 1) + col))) { // down
     highlightSurrounding((parseInt(row)+1) + col, moves-1);
     colorHex((parseInt(row)+1) + col, 'blue');
   }
 
-  isOdd ? highlightForOddId(id, moves, canHighlight) : highlightForEvenId(id, moves, canHighlight);
+  isOdd ? highlightForOddId(id, moves, canHighlight, thisTileAdjPieces) : highlightForEvenId(id, moves, canHighlight, thisTileAdjPieces);
 }
 
 
-function highlightForOddId(id, moves, canHighlight) {
+function highlightForOddId(id, moves, canHighlight, thisTileAdjPieces) {
   if ($('#'+id).hasClass('gamePiece')) return;
   var row = id.split('')[0];
   var col = id.split('')[1];
 
-  if (canHighlight[1]) { // top-right
+
+  if (canHighlight[1] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds(row + (parseInt(col)+1)))) { // top-right
     highlightSurrounding(row + (parseInt(col)+1), moves-1);
     colorHex(row + (parseInt(col)+1), 'blue');
   }
-  if (canHighlight[2]) { // bottom-right
+  if (canHighlight[2] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((parseInt(row)+1) + '' + (parseInt(col)+1)))) { // bottom-right
     highlightSurrounding((parseInt(row)+1) + '' + (parseInt(col)+1), moves-1);
     colorHex((parseInt(row)+1) + '' + (parseInt(col)+1), 'blue');
   }
-  if (canHighlight[4]) { // bottom-left
+  if (canHighlight[4] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((parseInt(row)+1) + '' + (parseInt(col)-1)))) { // bottom-left
     highlightSurrounding((parseInt(row)+1) + '' + (parseInt(col)-1), moves-1);
     colorHex((parseInt(row)+1) + '' + (parseInt(col)-1), 'blue');
   }
-  if (canHighlight[5]) { // top-left
+  if (canHighlight[5] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds(row + (parseInt(col)-1)))) { // top-left
     highlightSurrounding(row + (parseInt(col)-1), moves-1);
     colorHex(row + (parseInt(col)-1), 'blue');
   }
 }
 
 
-function highlightForEvenId(id, moves, canHighlight) {
+function highlightForEvenId(id, moves, canHighlight, thisTileAdjPieces) {
   if ($('#'+id).hasClass('gamePiece')) return;
   var row = id.split('')[0];
   var col = id.split('')[1];
 
-  if (canHighlight[1]) { // top-right
+  if (canHighlight[1] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((parseInt(row)-1) + '' + (parseInt(col)+1)))) { // top-right
     highlightSurrounding((parseInt(row)-1) + '' + (parseInt(col)+1), moves-1);
     colorHex((parseInt(row)-1) + '' + (parseInt(col)+1), 'blue');
   }
-  if (canHighlight[2]) { // bottom-right
+  if (canHighlight[2] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds(row + (parseInt(col)+1)))) { // bottom-right
     highlightSurrounding(row + (parseInt(col)+1), moves-1);
     colorHex(row + (parseInt(col)+1), 'blue');
   }
-  if (canHighlight[4]) { // bottom-left
+  if (canHighlight[4] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds(row + (parseInt(col)-1)))) { // bottom-left
     highlightSurrounding(row + (parseInt(col)-1), moves-1);
     colorHex(row + (parseInt(col)-1), 'blue');
   }
-  if (canHighlight[5]) { // top-left
+  if (canHighlight[5] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((parseInt(row)-1) + '' + (parseInt(col)-1)))) { // top-left
     highlightSurrounding((parseInt(row)-1) + '' + (parseInt(col)-1), moves-1);
     colorHex((parseInt(row)-1) + '' + (parseInt(col)-1), 'blue');
   }
@@ -180,27 +182,37 @@ function evenIdIsAdjacentToHive(id) {
 function adjacentTilesSlidable(id, isOdd) {
   var row = id.split('')[0];
   var col = id.split('')[1];
-  var adjacentTiles;
+  var adjacentTiles = getAdjacentIds(id, isOdd);
+  adjacentTiles = adjacentTiles.map(function(id) {
+    return $('#'+id).hasClass('gamePiece');
+  });
+  return adjacentTilesSlidableInternal(adjacentTiles);
+}
+
+
+// returns array of id's of tiles that are adjacent to the given tile id
+function getAdjacentIds(id, isOdd) {
+  var row = id.split('')[0];
+  var col = id.split('')[1];
   if (isOdd) {
-    adjacentTiles = [
-      $('#'+(row - 1 + col)).hasClass('gamePiece'),
-      $('#'+(row + (+col + 1))).hasClass('gamePiece'),
-      $('#'+((+row + 1) + '' + (+col + 1))).hasClass('gamePiece'),
-      $('#'+((parseInt(row)+1) + col)).hasClass('gamePiece'),
-      $('#'+((+row + 1) + '' + (col - 1))).hasClass('gamePiece'),
-      $('#'+(row + (col - 1))).hasClass('gamePiece')
+    return [
+      row - 1 + col,
+      row + (+col + 1),
+      (+row + 1) + '' + (+col + 1),
+      (parseInt(row)+1) + col,
+      (+row + 1) + '' + (col - 1),
+      row + (col - 1)
     ];
   } else {
-    adjacentTiles = [
-      $('#'+(row - 1 + col)).hasClass('gamePiece'),
-      $('#'+((row - 1) + '' + (+col + 1))).hasClass('gamePiece'),
-      $('#'+(row + (+col + 1))).hasClass('gamePiece'),
-      $('#'+((parseInt(row)+1) + col)).hasClass('gamePiece'),
-      $('#'+(row + '' + (col - 1))).hasClass('gamePiece'),
-      $('#'+((row - 1) + '' + (col - 1))).hasClass('gamePiece')
+    return [
+      row - 1 + col,
+      (row - 1) + '' + (+col + 1),
+      row + (+col + 1),
+      (parseInt(row)+1) + col,
+      row + '' + (col - 1),
+      (row - 1) + '' + (col - 1)
     ];
   }
-  return adjacentTilesSlidableInternal(adjacentTiles);
 }
 
 
@@ -215,3 +227,22 @@ function adjacentTilesSlidableInternal(adjTiles) {
     return (array[prev] && array[next]) ? false : true;
   });
 }
+
+
+// returns array of id's of gamepieces that are adjacent to the given tile id
+// the length of the returned array for the bee piece is what decides when the
+// game is over (lenght of 6 means game is over).
+function findAdjacentPieceIds(id, isOdd) {
+  var adjacentTiles = getAdjacentIds(id, isOdd);
+  return adjacentTiles.filter(function(tileId) {
+    return $('#'+tileId).hasClass('gamePiece');
+  });
+}
+
+
+function hasMatchingAdjacentPieces(adjSet1, adjSet2) {
+  return !!adjSet1.filter(function(id) {
+    return adjSet2.indexOf(id) !== -1;
+  }).length;
+}
+
