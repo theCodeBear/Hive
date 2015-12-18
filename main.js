@@ -34,6 +34,8 @@ $(function() {
   $('.hex').on('click', function() {
     if (!$(this).hasClass('gamePiece')) {
       var id = $(this).attr('id');
+      $('#'+id).toggleClass('selected');
+      $('.selected:not(#'+id+')').removeClass('selected');
       $('.highlight').removeClass('highlight');
       $('.leftTriHighlight').removeClass('leftTriHighlight');
       $('.rightTriHighlight').removeClass('rightTriHighlight');
@@ -51,24 +53,16 @@ $(function() {
 function highlightSurrounding(id, moves) {
   // if there are still moves left and piece attempting to highlight is not a gamepiece
   if (moves > 0 && !$('#'+id).hasClass('gamePiece')) {
-    if (id.slice(-1) % 2 === 1) {
-    // doesn't allow pieces not next to the hive to be clicked
-      if (oddIdIsAdjacentToHive(id)) {
-        highlighting(id, moves, 'odd');
-      }
-    } else {
-    // doesn't allow pieces not next to the hive to be clicked
-      if (evenIdIsAdjacentToHive(id)) {
-        highlighting(id, moves, 'even');
-      }
-    }
+    var isOdd = id.split('')[1] % 2 === 1;
+    if (isAdjacentToHive(id, isOdd))
+      highlighting(id, moves, isOdd);
   }
 }
 
 
 // attempts to highlight tile with given id, and call function to highlight surrounding tiles
-function highlighting(id, moves, idEvenOdd) {
-  var canHighlight = adjacentTilesSlidable(id, idEvenOdd);
+function highlighting(id, moves, isOdd) {
+  var canHighlight = adjacentTilesSlidable(id, isOdd);
   var row = id.split('')[0];
   var col = id.split('')[1];
 
@@ -81,7 +75,7 @@ function highlighting(id, moves, idEvenOdd) {
     colorHex((parseInt(row)+1) + col, 'blue');
   }
 
-  (idEvenOdd === 'odd') ? highlightForOddId(id, moves, canHighlight) : highlightForEvenId(id, moves, canHighlight);
+  isOdd ? highlightForOddId(id, moves, canHighlight) : highlightForEvenId(id, moves, canHighlight);
 }
 
 
@@ -133,13 +127,12 @@ function highlightForEvenId(id, moves, canHighlight) {
 }
 
 
-function colorHex(id, color) {
-  if ($('#'+id).hasClass('gamePiece')) return;
-  var row = id.split('')[0];
-  var col = id.split('')[1];
+function colorHex(id) {//, color) {
+  if ($('#'+id).hasClass('gamePiece') || $('#'+id).hasClass('selected')) return;
+  var isOdd = id.split('')[1] % 2 === 1;
 
   // doesn't allow highlighting of tile if it isn't adjacent to hive
-  if ( ((col % 2 === 1) && oddIdIsAdjacentToHive(id)) || ((col % 2 ===0) && evenIdIsAdjacentToHive(id)) ) {
+  if (isAdjacentToHive(id, isOdd)) {
     $('#' + id).addClass('highlight');
     $('#' + id + ' .hexLeft').addClass('leftTriHighlight');
     $('#' + id + ' .hexRight').addClass('rightTriHighlight');
@@ -148,6 +141,12 @@ function colorHex(id, color) {
 }
 
 
+function isAdjacentToHive(id, isOdd) {
+  return isOdd ? oddIdIsAdjacentToHive(id) : evenIdIsAdjacentToHive(id);
+}
+
+
+// internal - only called from isAdjacentTohive()
 function oddIdIsAdjacentToHive(id) {
   var row = id.split('')[0];
   var col = id.split('')[1];
@@ -161,6 +160,7 @@ function oddIdIsAdjacentToHive(id) {
 }
 
 
+// internal - only called from isAdjacentTohive()
 function evenIdIsAdjacentToHive(id) {
   var row = id.split('')[0];
   var col = id.split('')[1];
@@ -177,11 +177,11 @@ function evenIdIsAdjacentToHive(id) {
 // returns an array of the booleans representing if the immediate
 // surrounding tiles' of the given tile id are unable to be slid to
 // or not, starting from above current tile and proceding clockwise.
-function adjacentTilesSlidable(id, evenOrOdd) {
+function adjacentTilesSlidable(id, isOdd) {
   var row = id.split('')[0];
   var col = id.split('')[1];
   var adjacentTiles;
-  if (evenOrOdd === 'odd') {
+  if (isOdd) {
     adjacentTiles = [
       $('#'+(row - 1 + col)).hasClass('gamePiece'),
       $('#'+(row + (+col + 1))).hasClass('gamePiece'),

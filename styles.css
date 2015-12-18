@@ -77,7 +77,7 @@
 }
 
 .gamePiece .hexCenter {
-    background-color: black;
+  background-color: black;
 }
 
 .gamePiece .hexLeft {
@@ -86,4 +86,16 @@
 
 .gamePiece .hexRight {
   border-left-color: black;
+}
+
+.hex.selected .hexLeft {
+  border-right-color: lime;
+}
+
+.hex.selected .hexCenter {
+  background-color: lime;
+}
+
+.hex.selected .hexRight {
+  border-left-color: lime;
 }
