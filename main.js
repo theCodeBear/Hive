@@ -153,12 +153,19 @@ function oddIdIsAdjacentToHive(id) {
   let row = id.split('')[0];
   let col = id.split('')[1];
 
-  return $('#'+(parseInt(row)-1) + col).hasClass('gamePiece') ||
-  $('#'+(parseInt(row)+1) + col).hasClass('gamePiece') ||
-  $('#'+row + (parseInt(col)-1)).hasClass('gamePiece') ||
-  $('#'+row + (parseInt(col)+1)).hasClass('gamePiece') ||
-  $('#'+(parseInt(row)+1) + '' + (parseInt(col)-1)).hasClass('gamePiece') ||
-  $('#'+(parseInt(row)+1) + '' + (parseInt(col)+1)).hasClass('gamePiece');
+  let prevRowSameCol = $('#'+(parseInt(row)-1) + col);
+  let nextRowSameCol = $('#'+(parseInt(row)+1) + col);
+  let sameRowPrevCol = $('#'+row + (parseInt(col)-1));
+  let sameRowNextCol = $('#'+row + (parseInt(col)+1));
+  let nextRowPrevCol = $('#'+(parseInt(row)+1) + '' + (parseInt(col)-1));
+  let nextRowNextCol = $('#'+(parseInt(row)+1) + '' + (parseInt(col)+1));
+
+  return prevRowSameCol.hasClass('gamePiece') ||
+    nextRowSameCol.hasClass('gamePiece') ||
+    sameRowPrevCol.hasClass('gamePiece') ||
+    sameRowNextCol.hasClass('gamePiece') ||
+    nextRowPrevCol.hasClass('gamePiece') ||
+    nextRowNextCol.hasClass('gamePiece');
 }
 
 
@@ -167,31 +174,37 @@ function evenIdIsAdjacentToHive(id) {
   let row = id.split('')[0];
   let col = id.split('')[1];
 
-  return $('#'+(parseInt(row)-1) + col).hasClass('gamePiece') ||
-  $('#'+(parseInt(row)+1) + col).hasClass('gamePiece') ||
-  $('#'+(parseInt(row)-1) + '' + (parseInt(col)-1)).hasClass('gamePiece') ||
-  $('#'+(parseInt(row)-1) + '' + (parseInt(col)+1)).hasClass('gamePiece') ||
-  $('#'+row + (parseInt(col)-1)).hasClass('gamePiece') ||
-  $('#'+row + (parseInt(col)+1)).hasClass('gamePiece');
+  let prevRowSameCol = $('#'+(parseInt(row)-1) + col).hasClass('gamePiece');
+  let nextRowSameCol = $('#'+(parseInt(row)+1) + col).hasClass('gamePiece');
+  let prevRowPrevCol = $('#'+(parseInt(row)-1) + '' + (parseInt(col)-1)).hasClass('gamePiece');
+  let prevRowNextCol = $('#'+(parseInt(row)-1) + '' + (parseInt(col)+1)).hasClass('gamePiece');
+  let sameRowPrevCol = $('#'+row + (parseInt(col)-1)).hasClass('gamePiece');
+  let sameRowNextCol = $('#'+row + (parseInt(col)+1)).hasClass('gamePiece');
+
+  return prevRowSameCol ||
+    nextRowSameCol ||
+    prevRowPrevCol ||
+    prevRowNextCol ||
+    sameRowPrevCol ||
+    sameRowNextCol;
 }
 
 
 // returns an array of the booleans representing if the immediate
-// surrounding tiles' of the given tile id are unable to be slid to
-// or not, starting from above current tile and proceding clockwise.
+// surrounding tiles' of the given tile id are able to be slid to (true)
+// or not (false), starting from above current tile and proceding clockwise.
+// Doesn't care if the tile being examined is in fact a gamepiece itself.
 function adjacentTilesSlidable(id, isOdd) {
-  let row = id.split('')[0];
-  let col = id.split('')[1];
-  let adjacentTiles = getAdjacentIds(id, isOdd);
-  adjacentTiles = adjacentTiles.map(function(id) {
-    return $('#'+id).hasClass('gamePiece');
-  });
-  return adjacentTilesSlidableInternal(adjacentTiles);
+  let adjacentTiles = getAdjacentTileIds(id, isOdd);
+  let adjacentTilesAreGamepiece = adjacentTiles.map(id =>
+    $('#'+id).hasClass('gamePiece')
+  );
+  return adjacentTilesSlidableInternal(adjacentTilesAreGamepiece);
 }
 
 
 // returns array of id's of tiles that are adjacent to the given tile id
-function getAdjacentIds(id, isOdd) {
+function getAdjacentTileIds(id, isOdd) {
   let row = id.split('')[0];
   let col = id.split('')[1];
   if (isOdd) {
@@ -217,7 +230,8 @@ function getAdjacentIds(id, isOdd) {
 
 
 // takes array of booleans representing if adjacent tiles are gamepieces.
-// returns an array representing if that adjacent tile can be slid to.
+// returns a boolean array representing if that adjacent tile can be slid to.
+// Doesn't care if the tile being examined is in fact a gamepiece itself.
 function adjacentTilesSlidableInternal(adjTiles) {
   return adjTiles.map(function(openTile, index, array) {
     let prev, next;
@@ -231,15 +245,17 @@ function adjacentTilesSlidableInternal(adjTiles) {
 
 // returns array of id's of gamepieces that are adjacent to the given tile id
 // the length of the returned array for the bee piece is what decides when the
-// game is over (lenght of 6 means game is over).
+// game is over (length of 6 means game is over).
 function findAdjacentPieceIds(id, isOdd) {
-  let adjacentTiles = getAdjacentIds(id, isOdd);
+  let adjacentTiles = getAdjacentTileIds(id, isOdd);
   return adjacentTiles.filter(function(tileId) {
     return $('#'+tileId).hasClass('gamePiece');
   });
 }
 
-
+// checks if the two sets of game pieces (an array of numbers in string format)
+// have any shared id's, meaning the two tiles represented by these adjacent
+// game pieces are adjacent to the same gampiece(s).
 function hasMatchingAdjacentPieces(adjSet1, adjSet2) {
   return !!adjSet1.filter(function(id) {
     return adjSet2.indexOf(id) !== -1;
