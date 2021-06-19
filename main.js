@@ -67,11 +67,13 @@ function highlighting(id, moves, isOdd) {
   let row = id.split('')[0];
   let col = id.split('')[1];
 
-  if (canHighlight[0] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((row-1) + col))) { // up
+  // check the tile directly above the chosen tile cuz for this doesn't matter if chosen tile is even or odd
+  if (canHighlight[0] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((row-1) + col, isOdd))) { // up
     highlightSurrounding((parseInt(row)-1) + col, moves-1);
     colorHex((parseInt(row)-1) + col, 'blue');
   }
-  if (canHighlight[3] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((+row + 1) + col))) { // down
+  // check the tile directly below the chosen tile cuz for this doesn't matter if chosen tile is even or odd
+  if (canHighlight[3] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((+row + 1) + col, isOdd))) { // down
     highlightSurrounding((parseInt(row)+1) + col, moves-1);
     colorHex((parseInt(row)+1) + col, 'blue');
   }
@@ -85,20 +87,19 @@ function highlightForOddId(id, moves, canHighlight, thisTileAdjPieces) {
   let row = id.split('')[0];
   let col = id.split('')[1];
 
-
-  if (canHighlight[1] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds(row + (parseInt(col)+1)))) { // top-right
+  if (canHighlight[1] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds(row + (parseInt(col)+1), false))) { // top-right
     highlightSurrounding(row + (parseInt(col)+1), moves-1);
     colorHex(row + (parseInt(col)+1), 'blue');
   }
-  if (canHighlight[2] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((parseInt(row)+1) + '' + (parseInt(col)+1)))) { // bottom-right
+  if (canHighlight[2] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((parseInt(row)+1) + '' + (parseInt(col)+1), false))) { // bottom-right
     highlightSurrounding((parseInt(row)+1) + '' + (parseInt(col)+1), moves-1);
     colorHex((parseInt(row)+1) + '' + (parseInt(col)+1), 'blue');
   }
-  if (canHighlight[4] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((parseInt(row)+1) + '' + (parseInt(col)-1)))) { // bottom-left
+  if (canHighlight[4] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((parseInt(row)+1) + '' + (parseInt(col)-1), false))) { // bottom-left
     highlightSurrounding((parseInt(row)+1) + '' + (parseInt(col)-1), moves-1);
     colorHex((parseInt(row)+1) + '' + (parseInt(col)-1), 'blue');
   }
-  if (canHighlight[5] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds(row + (parseInt(col)-1)))) { // top-left
+  if (canHighlight[5] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds(row + (parseInt(col)-1), false))) { // top-left
     highlightSurrounding(row + (parseInt(col)-1), moves-1);
     colorHex(row + (parseInt(col)-1), 'blue');
   }
@@ -110,19 +111,19 @@ function highlightForEvenId(id, moves, canHighlight, thisTileAdjPieces) {
   let row = id.split('')[0];
   let col = id.split('')[1];
 
-  if (canHighlight[1] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((parseInt(row)-1) + '' + (parseInt(col)+1)))) { // top-right
+  if (canHighlight[1] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((parseInt(row)-1) + '' + (parseInt(col)+1), true))) { // top-right
     highlightSurrounding((parseInt(row)-1) + '' + (parseInt(col)+1), moves-1);
     colorHex((parseInt(row)-1) + '' + (parseInt(col)+1), 'blue');
   }
-  if (canHighlight[2] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds(row + (parseInt(col)+1)))) { // bottom-right
+  if (canHighlight[2] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds(row + (parseInt(col)+1), true))) { // bottom-right
     highlightSurrounding(row + (parseInt(col)+1), moves-1);
     colorHex(row + (parseInt(col)+1), 'blue');
   }
-  if (canHighlight[4] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds(row + (parseInt(col)-1)))) { // bottom-left
+  if (canHighlight[4] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds(row + (parseInt(col)-1), true))) { // bottom-left
     highlightSurrounding(row + (parseInt(col)-1), moves-1);
     colorHex(row + (parseInt(col)-1), 'blue');
   }
-  if (canHighlight[5] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((parseInt(row)-1) + '' + (parseInt(col)-1)))) { // top-left
+  if (canHighlight[5] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((parseInt(row)-1) + '' + (parseInt(col)-1), true))) { // top-left
     highlightSurrounding((parseInt(row)-1) + '' + (parseInt(col)-1), moves-1);
     colorHex((parseInt(row)-1) + '' + (parseInt(col)-1), 'blue');
   }
