@@ -1,14 +1,14 @@
 $(function() {
 
-  var rows = 9;
-  var cols = 8;
-  var $hexRow = '';
+  let rows = 9;
+  let cols = 8;
+  let $hexRow = '';
 
 // create board
-  for (var row=0; row<rows; row++) {
+  for (let row=0; row<rows; row++) {
     $hexRow = $('<div class="hex-row row' + row + '"></div>');
-    for (var col=0; col<cols; col++) {
-      var evenClass = '';
+    for (let col=0; col<cols; col++) {
+      let evenClass = '';
       if (col % 2 === 1)
         evenClass = ' even'
       $hexRow.append('<div class="hex' + evenClass + '" id="' + row + col + '">' +
@@ -33,7 +33,7 @@ $(function() {
 // if user clicks on an open board space, highlighting possible moves (testing 3 slides)
   $('.hex').on('click', function() {
     if (!$(this).hasClass('gamePiece')) {
-      var id = $(this).attr('id');
+      let id = $(this).attr('id');
       $('#'+id).toggleClass('selected');
       $('.selected:not(#'+id+')').removeClass('selected');
       $('.highlight').removeClass('highlight');
@@ -53,7 +53,7 @@ $(function() {
 function highlightSurrounding(id, moves) {
   // if there are still moves left and piece attempting to highlight is not a gamepiece
   if (moves > 0 && !$('#'+id).hasClass('gamePiece')) {
-    var isOdd = id.split('')[1] % 2 === 1;
+    let isOdd = id.split('')[1] % 2 === 1;
     if (isAdjacentToHive(id, isOdd))
       highlighting(id, moves, isOdd);
   }
@@ -62,10 +62,10 @@ function highlightSurrounding(id, moves) {
 
 // attempts to highlight tile with given id, and call function to highlight surrounding tiles
 function highlighting(id, moves, isOdd) {
-  var canHighlight = adjacentTilesSlidable(id, isOdd);
-  var thisTileAdjPieces = findAdjacentPieceIds(id, isOdd);
-  var row = id.split('')[0];
-  var col = id.split('')[1];
+  let canHighlight = adjacentTilesSlidable(id, isOdd);
+  let thisTileAdjPieces = findAdjacentPieceIds(id, isOdd);
+  let row = id.split('')[0];
+  let col = id.split('')[1];
 
   if (canHighlight[0] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((row-1) + col))) { // up
     highlightSurrounding((parseInt(row)-1) + col, moves-1);
@@ -82,8 +82,8 @@ function highlighting(id, moves, isOdd) {
 
 function highlightForOddId(id, moves, canHighlight, thisTileAdjPieces) {
   if ($('#'+id).hasClass('gamePiece')) return;
-  var row = id.split('')[0];
-  var col = id.split('')[1];
+  let row = id.split('')[0];
+  let col = id.split('')[1];
 
 
   if (canHighlight[1] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds(row + (parseInt(col)+1)))) { // top-right
@@ -107,8 +107,8 @@ function highlightForOddId(id, moves, canHighlight, thisTileAdjPieces) {
 
 function highlightForEvenId(id, moves, canHighlight, thisTileAdjPieces) {
   if ($('#'+id).hasClass('gamePiece')) return;
-  var row = id.split('')[0];
-  var col = id.split('')[1];
+  let row = id.split('')[0];
+  let col = id.split('')[1];
 
   if (canHighlight[1] && hasMatchingAdjacentPieces(thisTileAdjPieces, findAdjacentPieceIds((parseInt(row)-1) + '' + (parseInt(col)+1)))) { // top-right
     highlightSurrounding((parseInt(row)-1) + '' + (parseInt(col)+1), moves-1);
@@ -131,7 +131,7 @@ function highlightForEvenId(id, moves, canHighlight, thisTileAdjPieces) {
 
 function colorHex(id) {//, color) {
   if ($('#'+id).hasClass('gamePiece') || $('#'+id).hasClass('selected')) return;
-  var isOdd = id.split('')[1] % 2 === 1;
+  let isOdd = id.split('')[1] % 2 === 1;
 
   // doesn't allow highlighting of tile if it isn't adjacent to hive
   if (isAdjacentToHive(id, isOdd)) {
@@ -150,8 +150,8 @@ function isAdjacentToHive(id, isOdd) {
 
 // internal - only called from isAdjacentTohive()
 function oddIdIsAdjacentToHive(id) {
-  var row = id.split('')[0];
-  var col = id.split('')[1];
+  let row = id.split('')[0];
+  let col = id.split('')[1];
 
   return $('#'+(parseInt(row)-1) + col).hasClass('gamePiece') ||
   $('#'+(parseInt(row)+1) + col).hasClass('gamePiece') ||
@@ -164,8 +164,8 @@ function oddIdIsAdjacentToHive(id) {
 
 // internal - only called from isAdjacentTohive()
 function evenIdIsAdjacentToHive(id) {
-  var row = id.split('')[0];
-  var col = id.split('')[1];
+  let row = id.split('')[0];
+  let col = id.split('')[1];
 
   return $('#'+(parseInt(row)-1) + col).hasClass('gamePiece') ||
   $('#'+(parseInt(row)+1) + col).hasClass('gamePiece') ||
@@ -180,9 +180,9 @@ function evenIdIsAdjacentToHive(id) {
 // surrounding tiles' of the given tile id are unable to be slid to
 // or not, starting from above current tile and proceding clockwise.
 function adjacentTilesSlidable(id, isOdd) {
-  var row = id.split('')[0];
-  var col = id.split('')[1];
-  var adjacentTiles = getAdjacentIds(id, isOdd);
+  let row = id.split('')[0];
+  let col = id.split('')[1];
+  let adjacentTiles = getAdjacentIds(id, isOdd);
   adjacentTiles = adjacentTiles.map(function(id) {
     return $('#'+id).hasClass('gamePiece');
   });
@@ -192,8 +192,8 @@ function adjacentTilesSlidable(id, isOdd) {
 
 // returns array of id's of tiles that are adjacent to the given tile id
 function getAdjacentIds(id, isOdd) {
-  var row = id.split('')[0];
-  var col = id.split('')[1];
+  let row = id.split('')[0];
+  let col = id.split('')[1];
   if (isOdd) {
     return [
       row - 1 + col,
@@ -220,7 +220,7 @@ function getAdjacentIds(id, isOdd) {
 // returns an array representing if that adjacent tile can be slid to.
 function adjacentTilesSlidableInternal(adjTiles) {
   return adjTiles.map(function(openTile, index, array) {
-    var prev, next;
+    let prev, next;
     if (index === 0) { prev = 5; next = index+1; }
     else if (index === 5) { prev = index-1; next = 0; }
     else { prev = index-1; next = index+1; }
@@ -233,7 +233,7 @@ function adjacentTilesSlidableInternal(adjTiles) {
 // the length of the returned array for the bee piece is what decides when the
 // game is over (lenght of 6 means game is over).
 function findAdjacentPieceIds(id, isOdd) {
-  var adjacentTiles = getAdjacentIds(id, isOdd);
+  let adjacentTiles = getAdjacentIds(id, isOdd);
   return adjacentTiles.filter(function(tileId) {
     return $('#'+tileId).hasClass('gamePiece');
   });
